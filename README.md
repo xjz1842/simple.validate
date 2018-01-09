@@ -63,8 +63,10 @@ public class CustomerValidate extends AbstractValidate<CustomeRule>{
 ```
 
 3 生效自定义验证规则
-
+```
 ValidatePool.addValidate(CustomeRule.class,new CustomerValidate());
+```
+
 
 
 # Maven依赖
