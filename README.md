@@ -1,4 +1,3 @@
-# simple.validate
 
 # 默认支持的验证规则
 
@@ -68,7 +67,7 @@ public class CustomerValidate extends AbstractValidate<CustomeRule>{
 ValidatePool.addValidate(CustomeRule.class,new CustomerValidate());
 
 
-#Maven依赖
+# Maven依赖
 
 ```
     <groupId>com.validate</groupId>
