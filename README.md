@@ -10,8 +10,32 @@ RangeLengthValidate	        验证长度范围
 RangeValueValidate	        验证值范围	
 RegexpValidate	            验证正则规则
 
+Get started
 
-验证JavaBean
+# Maven依赖
+
+```
+    <groupId>com.validate</groupId>
+    <artifactId>simple.validate</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+```
+
+# 加入校验额配置
+
+```
+  新建一个类Config
+  
+  @Configuration
+  public class Config{
+  
+    @Bean
+      ValidateAspect validateAspect(){
+          return new ValidateAspect();
+      }
+  }
+```
+
+# 验证JavaBean
 
 ```
 @BeanValidate
@@ -67,12 +91,3 @@ public class CustomerValidate extends AbstractValidate<CustomeRule>{
 ValidatePool.addValidate(CustomeRule.class,new CustomerValidate());
 ```
 
-
-
-# Maven依赖
-
-```
-    <groupId>com.validate</groupId>
-    <artifactId>simple.validate</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
-```

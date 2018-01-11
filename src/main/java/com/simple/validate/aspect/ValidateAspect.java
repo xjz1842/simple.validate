@@ -1,37 +1,29 @@
-package com.jiahui.validate.aspect;
-
+package com.simple.validate.aspect;
 
 import com.simple.validate.ValidatePool;
 import com.simple.validate.annotation.BeanValidate;
-import com.simple.validate.annotation.Validated;
-import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-
 @Aspect
-@Order(-1)
-@Component
 public class ValidateAspect {
 
-    private Logger logger = LoggerFactory.getLogger(ValidateAspect.class);
-//
     private static final LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 
-    @Before("@annotation(validated)")
-    public void before(JoinPoint joinPoint, Validated validated)throws Exception {
+    @Pointcut("@annotation(com.simple.validate.annotation.Validated)")
+    public void validateAspect(){}
 
+    @Around("validateAspect()")
+    public Object checkIsValid(ProceedingJoinPoint joinPoint)throws Throwable,Exception {
         Object[] arguments = joinPoint.getArgs();
 
         int k = 0;
@@ -53,21 +45,24 @@ public class ValidateAspect {
             } else {
                 valideField(parameterAnnotation,parameterName[k],argument);
             }
+            k++;
         }
-        k++;
+
+        Object object = joinPoint.proceed();
+        return object;
     }
 
     private void valideBean(Object target, Class<?> clazz)throws Exception{
         if(target == null){
-          throw new RuntimeException("校验的对象为空");
+            throw new RuntimeException("校验的对象为空");
         }
 
         //校验没一个字段
         for(Field field : clazz.getDeclaredFields()){
-          Annotation[] annotations =  field.getAnnotations();
-          PropertyDescriptor pd = new PropertyDescriptor(field.getName(),clazz);
-          Object value = pd.getReadMethod().invoke(target);
-          valideField(annotations,field.getName(),value);
+            Annotation[] annotations =  field.getAnnotations();
+            PropertyDescriptor pd = new PropertyDescriptor(field.getName(),clazz);
+            Object value = pd.getReadMethod().invoke(target);
+            valideField(annotations,field.getName(),value);
         }
     }
 
@@ -76,6 +71,7 @@ public class ValidateAspect {
             ValidatePool.validates.get(annotation.annotationType()).validate(annotation,fieldName,value);
         }
     }
+
     /**
      * 获取方法所有参数名
      *
